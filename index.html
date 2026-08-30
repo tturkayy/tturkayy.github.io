@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türkay</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://i.ibb.co/Pv7TS2q5/logo-s.png" type="image/x-icon">
+    
+    <style>
+        /* 1. Theme: Sepia (Sun - Default) */
+        :root {
+            --bg: #f4f0e8;
+            --bg-subtle: #faf7f0;
+            --surface: rgba(253, 251, 247, 0.9);
+            --border: #dfd8cb;
+            --border-hover: #c5bcae;
+            --text-main: #201c18;
+            --text-muted: #70685e;
+            --accent: #b44318;
+            --accent-soft: rgba(180, 67, 24, 0.08);
+            --mesh-color: rgba(32, 28, 24, 0.06);
+
+            --gh-l0: #e2dbce;
+            --gh-l1: #d9b89e;
+            --gh-l2: #be8867;
+            --gh-l3: #9e5b38;
+            --gh-l4: #6b3318;
+
+            --radius: 10px;
+            --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+        }
+
+        /* 2. Theme: Dark (Moon) */
+        [data-theme="dark"] {
+            --bg: #090a0f;
+            --bg-subtle: #12151f;
+            --surface: rgba(16, 19, 27, 0.88);
+            --border: #1e2433;
+            --border-hover: #2e384d;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-soft: rgba(59, 130, 246, 0.1);
+            --mesh-color: rgba(255, 255, 255, 0.08);
+
+            --gh-l0: #161b22;
+            --gh-l1: #0e4429;
+            --gh-l2: #006d32;
+            --gh-l3: #26a641;
+            --gh-l4: #39d353;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: var(--sans);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            transition: background-color 0.25s ease, color 0.25s ease;
+            min-height: 100vh;
+            font-size: 14.5px;
+        }
+
+        #warp-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .app-wrapper {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            min-height: 100vh;
+        }
+
+        /* Sticky Header */
+        header {
+            position: sticky;
+            top: 1.5rem;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 1.25rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+            gap: 0.5rem;
+        }
+
+        .brand {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+        }
+
+        .brand-dot {
+            width: 9px;
+            height: 9px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .brand-dot:hover {
+            transform: scale(1.35);
+        }
+
+        .brand-dot.game-active {
+            background-color: #ef4444 !important;
+            box-shadow: 0 0 10px #ef4444 !important;
+            animation: pulseDot 1.2s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .social-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.05rem;
+            transition: color 0.15s ease, transform 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+        }
+
+        .social-link:hover {
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .theme-icon-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+            margin-left: 0.15rem;
+        }
+
+        .theme-icon-btn:hover {
+            border-color: var(--border-hover);
+            color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        /* 2-Column Dashboard */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            position: sticky;
+            top: 5.75rem;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03);
+            transition: border-color 0.2s ease;
+        }
+
+        .panel:hover {
+            border-color: var(--border-hover);
+        }
+
+        .panel-title {
+            font-size: 0.72rem;
+            font-family: var(--mono);
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .bio-headline {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.35;
+            margin-bottom: 0.45rem;
+            letter-spacing: -0.02em;
+        }
+
+        .bio-text {
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .focus-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .focus-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-family: var(--mono);
+        }
+
+        .focus-item i {
+            font-size: 0.65rem;
+            color: var(--accent);
+        }
+
+        .currently-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.78rem;
+            color: var(--text-main);
+            font-family: var(--mono);
+            margin-bottom: 1rem;
+            padding-bottom: 0.85rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background-color: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--accent);
+            display: inline-block;
+        }
+
+        .stack-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+        }
+
+        .stack-pill {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            background: var(--bg-subtle);
+            color: var(--text-main);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        /* GitHub Calendar */
+        .gh-stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            padding-bottom: 0.45rem;
+            border-bottom: 1px dashed var(--border);
+            margin-bottom: 0.6rem;
+        }
+
+        .gh-total-count {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .gh-grid {
+            display: grid;
+            grid-template-rows: repeat(7, 9px);
+            grid-auto-flow: column;
+            grid-auto-columns: 1fr;
+            gap: 3px;
+            width: 100%;
+        }
+
+        .gh-cell {
+            width: 100%;
+            height: 9px;
+            border-radius: 2px;
+            background-color: var(--gh-l0);
+            transition: transform 0.1s ease;
+        }
+
+        .gh-cell:hover {
+            transform: scale(1.3);
+            z-index: 2;
+        }
+
+        .gh-cell.l-1 { background-color: var(--gh-l1); }
+        .gh-cell.l-2 { background-color: var(--gh-l2); }
+        .gh-cell.l-3 { background-color: var(--gh-l3); }
+        .gh-cell.l-4 { background-color: var(--gh-l4); }
+
+        .gh-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .gh-legend {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .gh-legend-cell {
+            width: 7.5px;
+            height: 7.5px;
+            border-radius: 1.5px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .content-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        /* Project Cards */
+        .project-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            backdrop-filter: blur(14px);
+            transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.06);
+        }
+
+        .project-banner {
+            height: 85px;
+            background: var(--bg-subtle);
+            padding: 0.75rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .banner-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .banner-tag {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .banner-symbol {
+            font-family: var(--sans);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            z-index: 1;
+            letter-spacing: -0.01em;
+            text-transform: lowercase;
+        }
+
+        .banner-glow {
+            position: absolute;
+            right: -15px;
+            bottom: -15px;
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: var(--accent-soft);
+            filter: blur(18px);
+            pointer-events: none;
+        }
+
+        .project-content {
+            padding: 0.9rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .project-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            flex-grow: 1;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-top: 0.5rem;
+            border-top: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        .card-link-hint {
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-weight: 600;
+        }
+
+        /* Generic Info Cards (Publications / Articles) */
+        .info-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.15rem 1.3rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            backdrop-filter: blur(14px);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-badge {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--accent-soft);
+            border: 1px solid var(--border);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .info-date {
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--text-muted);
+        }
+
+        .info-title {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .info-subtext {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        /* Contact Form */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.55rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.55rem 0.75rem;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-family: var(--sans);
+            font-size: 0.82rem;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+
+        textarea {
+            height: 72px;
+            resize: none;
+        }
+
+        .btn-submit {
+            background: var(--text-main);
+            color: var(--bg);
+            border: none;
+            padding: 0.55rem;
+            border-radius: 6px;
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            transition: background-color 0.15s ease;
+        }
+
+        .btn-submit:hover {
+            background: var(--accent);
+        }
+
+        .loading-text {
+            font-family: var(--mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            grid-column: 1 / -1;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        /* Footer Copyright */
+        .page-footer {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            text-align: center;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.65;
+            user-select: none;
+        }
+
+        /* Slot Machine Easter Egg Modal */
+        .jackpot-modal {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 290px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+            padding: 0.9rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.65rem;
+            z-index: 1000;
+            backdrop-filter: blur(14px);
+        }
+
+        .jackpot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--mono);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .slot-machine {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.45rem;
+            background: var(--bg-subtle);
+            padding: 0.55rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .slot-reel-window {
+            flex: 1;
+            height: 70px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slot-strip {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        .slot-item {
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .spin-btn {
+            background: var(--text-main);
+            color: var(--bg);
+            border: none;
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 0.55rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .spin-btn:hover {
+            background: var(--accent);
+        }
+
+        .jackpot-status {
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 880px) {
+            header { top: 0.75rem; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .articles-grid { grid-template-columns: 1fr; }
+            .app-wrapper { padding: 1rem 0.85rem; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 0.65rem 0.9rem;
+            }
+            .brand {
+                font-size: 0.9rem;
+            }
+            .header-actions {
+                gap: 0.45rem;
+            }
+            .social-link {
+                width: 28px;
+                height: 28px;
+                font-size: 1rem;
+            }
+            .theme-icon-btn {
+                width: 28px;
+                height: 28px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>emailjs.init('6GWhVh1Bh-rnjpMCG');</script>
+</head>
+<body>
+
+    <canvas id="warp-canvas"></canvas>
+
+    <div class="app-wrapper">
+        <header>
+            <a href="#" class="brand" onclick="event.preventDefault();">
+                <span class="brand-dot" id="easter-egg-trigger" title="Double click me"></span>
+                Türkay Yıldırım
+            </a>
+            <div class="header-actions">
+                <a href="https://github.com/tturkayy" target="_blank" class="social-link" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://medium.com/@turkayyildirim" target="_blank" class="social-link" title="Medium"><i class="fab fa-medium"></i></a>
+                <a href="https://www.linkedin.com/in/turkayyildirim/" target="_blank" class="social-link" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                
+                <!-- 2-Theme Switcher: Sun (Sepia) <-> Moon (Dark) -->
+                <button class="theme-icon-btn" id="themeCycleBtn" aria-label="Toggle theme">
+                    <i id="themeIcon" class="fas fa-sun" title="sepia"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="panel">
+                    <div class="bio-headline">hey there, i am Türkay 👋</div>
+                    <p class="bio-text">turning ideas into projects — designing architectures, training models, and testing to see what actually works.</p>
+                    
+                    <div class="panel-title"><i class="fas fa-compass"></i> focus</div>
+                    <div class="focus-list">
+                        <div class="focus-item"><i class="fas fa-chevron-right"></i><span>computer vision & deep learning</span></div>
+                        <div class="focus-item"><i class="fas fa-chevron-right"></i><span>open-source tools & systems</span></div>
+                    </div>
+
+                    <div class="panel-title"><i class="fas fa-bolt"></i> currently</div>
+                    <div class="currently-item">
+                        <span class="status-dot"></span>
+                        <span>exploring visual-optical data encoding & 2d signal modulation</span>
+                    </div>
+
+                    <div class="panel-title"><i class="fas fa-terminal"></i> stack</div>
+                    <div class="stack-pills">
+                        <span class="stack-pill">python</span>
+                        <span class="stack-pill">c++</span>
+                        <span class="stack-pill">rust</span>
+                        <span class="stack-pill">pytorch</span>
+                        <span class="stack-pill">tensorflow</span>
+                        <span class="stack-pill">javascript</span>
+                        <span class="stack-pill">webgpu</span>
+                        <span class="stack-pill">docker</span>
+                    </div>
+                </div>
+
+                <!-- GitHub Native Contributions -->
+                <div class="panel">
+                    <div class="panel-title"><i class="fab fa-github"></i> contribution activity</div>
+                    <div class="gh-stats-row">
+                        <span>recent activity</span>
+                        <span id="gh-total-contribs" class="gh-total-count"><i class="fas fa-circle-notch fa-spin"></i></span>
+                    </div>
+                    <div id="gh-grid" class="gh-grid"></div>
+                    <div class="gh-footer">
+                        <span>less</span>
+                        <div class="gh-legend">
+                            <div class="gh-legend-cell" style="background: var(--gh-l0)"></div>
+                            <div class="gh-legend-cell" style="background: var(--gh-l1)"></div>
+                            <div class="gh-legend-cell" style="background: var(--gh-l2)"></div>
+                            <div class="gh-legend-cell" style="background: var(--gh-l3)"></div>
+                            <div class="gh-legend-cell" style="background: var(--gh-l4)"></div>
+                        </div>
+                        <span>more</span>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="panel">
+                    <div class="panel-title"><i class="fas fa-paper-plane"></i> quick contact</div>
+                    <form class="contact-form" id="contact-form">
+                        <div class="form-row">
+                            <input type="text" id="name" name="name" required placeholder="name">
+                            <input type="email" id="email" name="email" required placeholder="email">
+                        </div>
+                        <textarea id="message" name="message" required placeholder="your message..."></textarea>
+                        <button type="submit" class="btn-submit">
+                            <span>send</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        <div id="form-status" style="display:none; font-family:var(--mono); font-size:0.75rem; text-align:center; margin-top:0.3rem;"></div>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- 1. Articles and Study Notes (Medium RSS) -->
+                <section class="content-section">
+                    <div class="panel-title"><i class="fab fa-medium"></i> articles and study notes</div>
+                    <div class="articles-grid" id="articles-container">
+                        <div class="loading-text"><i class="fas fa-circle-notch fa-spin"></i> fetching medium stories...</div>
+                    </div>
+                </section>
+
+                <!-- 2. Repositories -->
+                <section class="content-section">
+                    <div class="panel-title"><i class="fas fa-cube"></i> repositories</div>
+                    <div class="projects-grid" id="projects-container">
+                        <div class="loading-text"><i class="fas fa-circle-notch fa-spin"></i> syncing repositories...</div>
+                    </div>
+                </section>
+
+                <!-- 3. Publications -->
+                <section class="content-section">
+                    <div class="panel-title"><i class="fas fa-book-bookmark"></i> publications</div>
+                    <a href="https://ieeexplore.ieee.org/document/11637037" target="_blank" class="info-card">
+                        <div class="info-header">
+                            <span class="info-badge">ieee xplore</span>
+                            <span class="info-date"><i class="far fa-calendar-alt"></i> august 2026</span>
+                        </div>
+                        <div class="info-title">spatial knowledge distillation in video models via vision-language guided zero-shot pretraining</div>
+                        <div class="info-subtext" style="font-family: var(--mono);">Aslı Çelik, Türkay Yıldırım</div>
+                    </a>
+                </section>
+            </main>
+        </div>
+
+        <!-- Minimal Footer -->
+        <footer class="page-footer">
+            Copyright 2026 — Türkay Yıldırım
+        </footer>
+    </div>
+
+    <!-- Jackpot Mini Modal -->
+    <div id="jackpot-modal" class="jackpot-modal">
+        <div class="jackpot-header">
+            <span>jackpot.exe</span>
+            <button style="background:none; border:none; color:var(--text-muted); cursor:pointer;" onclick="closeJackpotGame()">✕</button>
+        </div>
+        <div class="slot-machine">
+            <div class="slot-reel-window"><div id="strip-0" class="slot-strip"></div></div>
+            <div class="slot-reel-window"><div id="strip-1" class="slot-strip"></div></div>
+            <div class="slot-reel-window"><div id="strip-2" class="slot-strip"></div></div>
+        </div>
+        <button id="jackpot-spin-btn" class="spin-btn" onclick="spinJackpot()">SPIN [SPACE]</button>
+        <div id="jackpot-status" class="jackpot-status">press spin to play</div>
+    </div>
+
+    <script>
+        const GITHUB_USERNAME = 'tturkayy';
+        const MEDIUM_USERNAME = 'turkayyildirim';
+
+        // 2-Theme Switcher: Sepia (Sun) <-> Dark (Moon)
+        const themeBtn = document.getElementById('themeCycleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-moon';
+                themeIcon.setAttribute('title', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme'); // default sepia
+                themeIcon.className = 'fas fa-sun';
+                themeIcon.setAttribute('title', 'sepia');
+            }
+            localStorage.setItem('theme', theme);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'sepia';
+        setTheme(savedTheme);
+
+        themeBtn.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            setTheme(isDark ? 'sepia' : 'dark');
+        });
+
+        // GitHub Native Activity Calendar
+        async function fetchGitHubContributions() {
+            const gridEl = document.getElementById('gh-grid');
+            const totalEl = document.getElementById('gh-total-contribs');
+            
+            try {
+                const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                
+                const contribs = data.contributions || [];
+                const total = data.total ? data.total[Object.keys(data.total)[0]] : contribs.reduce((acc, cur) => acc + cur.count, 0);
+                totalEl.textContent = `${total} contribs`;
+
+                const WEEKS_TO_SHOW = 20;
+                const recentContribs = contribs.slice(-(WEEKS_TO_SHOW * 7));
+                gridEl.innerHTML = '';
+
+                recentContribs.forEach(day => {
+                    const cell = document.createElement('div');
+                    cell.className = `gh-cell ${day.level > 0 ? 'l-' + day.level : ''}`;
+                    cell.title = `${day.date}: ${day.count} commits`;
+                    gridEl.appendChild(cell);
+                });
+
+            } catch (err) {
+                totalEl.textContent = 'active';
+            }
+        }
+
+        // Repositories Fetcher
+        async function fetchGitHubProjects() {
+            const container = document.getElementById('projects-container');
+            const ignored = [
+                `${GITHUB_USERNAME.toLowerCase()}.github.io`,
+                'stegocrypt_web',
+                'stegocrypt-web',
+                'stegocryptweb'
+            ];
+
+            try {
+                const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=12`);
+                if (!res.ok) throw new Error();
+                const repos = await res.json();
+
+                const ownRepos = repos.filter(repo => {
+                    const name = repo.name.toLowerCase();
+                    const isPagesRepo = name === `${GITHUB_USERNAME.toLowerCase()}.github.io` || 
+                                        name === GITHUB_USERNAME.toLowerCase() || 
+                                        repo.html_url.toLowerCase().includes(`${GITHUB_USERNAME.toLowerCase()}.github.io`);
+                    return !repo.fork && !isPagesRepo && !ignored.includes(name);
+                });
+
+                if (ownRepos.length === 0) {
+                    container.innerHTML = `<div class="loading-text">no public repositories found.</div>`;
+                    return;
+                }
+
+                container.innerHTML = ownRepos.map(repo => {
+                    const lang = (repo.language || 'code').toLowerCase();
+                    const desc = (repo.description || 'open-source implementation and algorithms.').toLowerCase();
+                    const cleanName = repo.name.replace(/[-_]/g, ' ').toLowerCase();
+
+                    return `
+                    <a href="${repo.html_url}" target="_blank" class="project-card">
+                        <div class="project-banner">
+                            <div class="banner-header">
+                                <span class="banner-tag">${lang}</span>
+                                <span style="font-family:var(--mono); font-size:0.72rem; color:var(--text-muted); z-index:1;">
+                                    ${repo.stargazers_count > 0 ? `<i class="fas fa-star"></i> ${repo.stargazers_count}` : `<i class="fas fa-code-branch"></i> ${repo.default_branch.toLowerCase()}`}
+                                </span>
+                            </div>
+                            <div class="banner-symbol">${cleanName}</div>
+                            <div class="banner-glow"></div>
+                        </div>
+                        <div class="project-content">
+                            <div class="project-desc">${desc}</div>
+                            <div class="project-meta">
+                                <span class="card-link-hint">source <i class="fas fa-arrow-up-right-from-square"></i></span>
+                            </div>
+                        </div>
+                    </a>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                container.innerHTML = `<div class="loading-text" style="color:var(--accent);">failed to sync projects.</div>`;
+            }
+        }
+
+        // Medium RSS Fetcher
+        async function fetchMediumArticles() {
+            const container = document.getElementById('articles-container');
+            const rssUrl = `https://medium.com/feed/@${MEDIUM_USERNAME}`;
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+            try {
+                const res = await fetch(apiUrl);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+
+                if (!data.items || data.items.length === 0) {
+                    container.innerHTML = `<div class="loading-text">no articles found.</div>`;
+                    return;
+                }
+
+                // Show top 4 articles
+                const articles = data.items.slice(0, 4);
+
+                container.innerHTML = articles.map(item => {
+                    const dateObj = new Date(item.pubDate);
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toLowerCase();
+                    
+                    // Strip HTML from description snippet
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = item.description || '';
+                    const snippet = (tempDiv.textContent || tempDiv.innerText || '').substring(0, 110).trim() + '...';
+
+                    return `
+                    <a href="${item.link}" target="_blank" class="info-card">
+                        <div class="info-header">
+                            <span class="info-badge">medium</span>
+                            <span class="info-date"><i class="far fa-calendar-alt"></i> ${formattedDate}</span>
+                        </div>
+                        <div class="info-title">${item.title.toLowerCase()}</div>
+                        <div class="info-subtext">${snippet.toLowerCase()}</div>
+                    </a>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                container.innerHTML = `
+                <a href="https://medium.com/@${MEDIUM_USERNAME}" target="_blank" class="info-card" style="grid-column: 1/-1;">
+                    <div class="info-header">
+                        <span class="info-badge">medium</span>
+                        <span class="info-date">profile</span>
+                    </div>
+                    <div class="info-title">read stories on medium</div>
+                    <div class="info-subtext">click to view articles, deep dives, and machine learning write-ups directly on medium.</div>
+                </a>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchGitHubProjects();
+            fetchGitHubContributions();
+            fetchMediumArticles();
+            initJackpotStrips();
+        });
+
+        // Easter Egg Reel Jackpot
+        const dotTrigger = document.getElementById('easter-egg-trigger');
+        const jackpotModal = document.getElementById('jackpot-modal');
+        const statusText = document.getElementById('jackpot-status');
+        const spinBtn = document.getElementById('jackpot-spin-btn');
+        let lastDotClick = 0;
+        let isJackpotOpen = false;
+        let isSpinning = false;
+
+        const SLOT_ITEMS = [
+            { id: '7', html: '<span class="slot-item" style="color:#ef4444; font-weight:700;">7</span>' },
+            { id: 'bar', html: '<span class="slot-item" style="font-size:0.9rem; font-weight:700; color:#f59e0b;">BAR</span>' },
+            { id: 'gem', html: '<div class="slot-item" style="color:#38bdf8;"><i class="fas fa-gem"></i></div>' },
+            { id: 'star', html: '<div class="slot-item" style="color:#a855f7;"><i class="fas fa-star"></i></div>' }
+        ];
+
+        const ITEM_HEIGHT = 70;
+        let currentIndexes = [0, 0, 0];
+
+        function initJackpotStrips() {
+            for (let r = 0; r < 3; r++) {
+                const strip = document.getElementById(`strip-${r}`);
+                if (!strip) continue;
+                strip.innerHTML = SLOT_ITEMS.map(i => i.html).join('');
+                strip.style.transform = `translateY(-${currentIndexes[r] * ITEM_HEIGHT}px)`;
+            }
+        }
+
+        dotTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const now = Date.now();
+            if (now - lastDotClick < 250) {
+                isJackpotOpen = !isJackpotOpen;
+                dotTrigger.classList.toggle('game-active', isJackpotOpen);
+                jackpotModal.style.display = isJackpotOpen ? 'flex' : 'none';
+                lastDotClick = 0;
+            } else {
+                lastDotClick = now;
+            }
+        });
+
+        function closeJackpotGame() {
+            isJackpotOpen = false;
+            dotTrigger.classList.remove('game-active');
+            jackpotModal.style.display = 'none';
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!isJackpotOpen) return;
+            if (e.key === 'Escape') closeJackpotGame();
+            if (e.code === 'Space') {
+                e.preventDefault();
+                spinJackpot();
+            }
+        });
+
+        function spinJackpot() {
+            if (isSpinning) return;
+            isSpinning = true;
+            spinBtn.disabled = true;
+            statusText.textContent = "spinning reels...";
+
+            const winIdx = Math.floor(Math.random() * SLOT_ITEMS.length);
+            const isWin = Math.random() < 0.25;
+            const targets = isWin ? [winIdx, winIdx, winIdx] : [
+                Math.floor(Math.random() * SLOT_ITEMS.length),
+                Math.floor(Math.random() * SLOT_ITEMS.length),
+                Math.floor(Math.random() * SLOT_ITEMS.length)
+            ];
+
+            const durations = [1100, 1400, 1700];
+
+            for (let r = 0; r < 3; r++) {
+                const strip = document.getElementById(`strip-${r}`);
+                let extHTML = '';
+                for (let i = 0; i < 6; i++) extHTML += SLOT_ITEMS.map(item => item.html).join('');
+                strip.innerHTML = extHTML;
+
+                const pos = (4 * SLOT_ITEMS.length * ITEM_HEIGHT) + (targets[r] * ITEM_HEIGHT);
+                strip.style.transition = `transform ${durations[r]}ms cubic-bezier(0.12, 0.8, 0.33, 1)`;
+                strip.style.transform = `translateY(-${pos}px)`;
+
+                setTimeout(() => {
+                    strip.style.transition = 'none';
+                    strip.innerHTML = SLOT_ITEMS.map(item => item.html).join('');
+                    strip.style.transform = `translateY(-${targets[r] * ITEM_HEIGHT}px)`;
+                    currentIndexes[r] = targets[r];
+                }, durations[r]);
+            }
+
+            setTimeout(() => {
+                isSpinning = false;
+                spinBtn.disabled = false;
+                if (targets[0] === targets[1] && targets[1] === targets[2]) {
+                    statusText.textContent = "🎉 JACKPOT WIN!";
+                    statusText.style.color = "var(--accent)";
+                } else {
+                    statusText.textContent = "no match. try again!";
+                    statusText.style.color = "var(--text-muted)";
+                }
+            }, 1800);
+        }
+
+        // Interactive Canvas Mesh
+        const canvas = document.getElementById('warp-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let mouseX = -9999, mouseY = -9999;
+        let targetMouseX = -9999, targetMouseY = -9999;
+
+        window.addEventListener('mousemove', (e) => {
+            targetMouseX = e.clientX;
+            targetMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            targetMouseX = -9999;
+            targetMouseY = -9999;
+        });
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function drawInteractiveMesh() {
+            ctx.clearRect(0, 0, width, height);
+
+            const computedStyle = getComputedStyle(document.documentElement);
+            ctx.strokeStyle = computedStyle.getPropertyValue('--mesh-color').trim() || 'rgba(0,0,0,0.06)';
+            ctx.lineWidth = 1;
+
+            mouseX += (targetMouseX - mouseX) * 0.08;
+            mouseY += (targetMouseY - mouseY) * 0.08;
+
+            const step = 44;
+            const cols = Math.floor(width / step) + 4;
+            const rows = Math.floor(height / step) + 4;
+            const radius = 400;
+            const maxShift = 32;
+
+            function warp(px, py) {
+                const dx = px - mouseX;
+                const dy = py - mouseY;
+                const distSq = dx * dx + dy * dy;
+                const radSq = radius * radius;
+
+                if (distSq < radSq) {
+                    const factor = Math.exp(-distSq / (2 * Math.pow(radius * 0.38, 2)));
+                    return {
+                        x: px - dx * (factor * maxShift / radius),
+                        y: py - dy * (factor * maxShift / radius)
+                    };
+                }
+                return { x: px, y: py };
+            }
+
+            const grid = [];
+            for (let r = 0; r <= rows; r++) {
+                grid[r] = [];
+                for (let c = 0; c <= cols; c++) {
+                    grid[r][c] = warp((c - 2) * step, (r - 2) * step);
+                }
+            }
+
+            for (let r = 0; r <= rows; r++) {
+                ctx.beginPath();
+                for (let c = 0; c <= cols; c++) {
+                    const pt = grid[r][c];
+                    if (c === 0) ctx.moveTo(pt.x, pt.y);
+                    else ctx.lineTo(pt.x, pt.y);
+                }
+                ctx.stroke();
+            }
+
+            for (let c = 0; c <= cols; c++) {
+                ctx.beginPath();
+                for (let r = 0; r <= rows; r++) {
+                    const pt = grid[r][c];
+                    if (r === 0) ctx.moveTo(pt.x, pt.y);
+                    else ctx.lineTo(pt.x, pt.y);
+                }
+                ctx.stroke();
+            }
+
+            requestAnimationFrame(drawInteractiveMesh);
+        }
+        drawInteractiveMesh();
+
+        // Contact Form
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const status = document.getElementById('form-status');
+            const submitBtn = this.querySelector('.btn-submit');
+            
+            submitBtn.disabled = true;
+            status.style.display = 'block';
+            status.style.color = 'var(--text-muted)';
+            status.textContent = 'sending...';
+
+            emailjs.sendForm('service_0jkfmhn', 'template_ecvr8lc', this)
+                .then(() => {
+                    status.style.color = 'var(--accent)';
+                    status.textContent = 'sent successfully!';
+                    this.reset();
+                    setTimeout(() => status.style.display = 'none', 3000);
+                }, () => {
+                    status.style.color = '#ef4444';
+                    status.textContent = 'failed to send.';
+                })
+                .finally(() => {
+                    submitBtn.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>
