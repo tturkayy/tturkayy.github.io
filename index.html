@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Türkay</title>
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -916,6 +924,31 @@
     <script>
         const GITHUB_USERNAME = 'tturkayy';
         const MEDIUM_USERNAME = 'turkayyildirim';
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 dakika (milisaniye)
+
+        // Cache Helper Functions
+        function getCachedData(key) {
+            try {
+                const cached = localStorage.getItem(key);
+                if (!cached) return null;
+                const parsed = JSON.parse(cached);
+                if (Date.now() - parsed.timestamp < CACHE_DURATION) {
+                    return parsed.data;
+                }
+            } catch (e) {
+                return null;
+            }
+            return null;
+        }
+
+        function setCachedData(key, data) {
+            try {
+                localStorage.setItem(key, JSON.stringify({
+                    timestamp: Date.now(),
+                    data: data
+                }));
+            } catch (e) {}
+        }
 
         // 2-Theme Switcher: Sepia (Sun) <-> Dark (Moon)
         const themeBtn = document.getElementById('themeCycleBtn');
@@ -924,12 +957,16 @@
         function setTheme(theme) {
             if (theme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                themeIcon.className = 'fas fa-moon';
-                themeIcon.setAttribute('title', 'dark');
+                if (themeIcon) {
+                    themeIcon.className = 'fas fa-moon';
+                    themeIcon.setAttribute('title', 'dark');
+                }
             } else {
                 document.documentElement.removeAttribute('data-theme'); // default sepia
-                themeIcon.className = 'fas fa-sun';
-                themeIcon.setAttribute('title', 'sepia');
+                if (themeIcon) {
+                    themeIcon.className = 'fas fa-sun';
+                    themeIcon.setAttribute('title', 'sepia');
+                }
             }
             localStorage.setItem('theme', theme);
         }
@@ -946,12 +983,8 @@
         async function fetchGitHubContributions() {
             const gridEl = document.getElementById('gh-grid');
             const totalEl = document.getElementById('gh-total-contribs');
-            
-            try {
-                const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-                
+
+            const renderContributions = (data) => {
                 const contribs = data.contributions || [];
                 const total = data.total ? data.total[Object.keys(data.total)[0]] : contribs.reduce((acc, cur) => acc + cur.count, 0);
                 totalEl.textContent = `${total} contribs`;
@@ -966,7 +999,20 @@
                     cell.title = `${day.date}: ${day.count} commits`;
                     gridEl.appendChild(cell);
                 });
+            };
 
+            const cached = getCachedData('cache_gh_contributions');
+            if (cached) {
+                renderContributions(cached);
+                return;
+            }
+            
+            try {
+                const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}?y=last`);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                setCachedData('cache_gh_contributions', data);
+                renderContributions(data);
             } catch (err) {
                 totalEl.textContent = 'active';
             }
@@ -982,11 +1028,7 @@
                 'stegocryptweb'
             ];
 
-            try {
-                const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=12`);
-                if (!res.ok) throw new Error();
-                const repos = await res.json();
-
+            const renderProjects = (repos) => {
                 const ownRepos = repos.filter(repo => {
                     const name = repo.name.toLowerCase();
                     const isPagesRepo = name === `${GITHUB_USERNAME.toLowerCase()}.github.io` || 
@@ -1026,7 +1068,20 @@
                     </a>
                     `;
                 }).join('');
+            };
 
+            const cached = getCachedData('cache_gh_repos');
+            if (cached) {
+                renderProjects(cached);
+                return;
+            }
+
+            try {
+                const res = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=12`);
+                if (!res.ok) throw new Error();
+                const repos = await res.json();
+                setCachedData('cache_gh_repos', repos);
+                renderProjects(repos);
             } catch (error) {
                 container.innerHTML = `<div class="loading-text" style="color:var(--accent);">failed to sync projects.</div>`;
             }
@@ -1038,24 +1093,18 @@
             const rssUrl = `https://medium.com/feed/@${MEDIUM_USERNAME}`;
             const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
-            try {
-                const res = await fetch(apiUrl);
-                if (!res.ok) throw new Error();
-                const data = await res.json();
-
+            const renderArticles = (data) => {
                 if (!data.items || data.items.length === 0) {
                     container.innerHTML = `<div class="loading-text">no articles found.</div>`;
                     return;
                 }
 
-                // Show top 4 articles
                 const articles = data.items.slice(0, 4);
 
                 container.innerHTML = articles.map(item => {
                     const dateObj = new Date(item.pubDate);
                     const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toLowerCase();
                     
-                    // Strip HTML from description snippet
                     const tempDiv = document.createElement('div');
                     tempDiv.innerHTML = item.description || '';
                     const snippet = (tempDiv.textContent || tempDiv.innerText || '').substring(0, 110).trim() + '...';
@@ -1071,7 +1120,20 @@
                     </a>
                     `;
                 }).join('');
+            };
 
+            const cached = getCachedData('cache_medium_articles');
+            if (cached) {
+                renderArticles(cached);
+                return;
+            }
+
+            try {
+                const res = await fetch(apiUrl);
+                if (!res.ok) throw new Error();
+                const data = await res.json();
+                setCachedData('cache_medium_articles', data);
+                renderArticles(data);
             } catch (error) {
                 container.innerHTML = `
                 <a href="https://medium.com/@${MEDIUM_USERNAME}" target="_blank" class="info-card" style="grid-column: 1/-1;">
