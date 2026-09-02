@@ -124,35 +124,40 @@
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 0.55rem;
+            gap: 0.65rem;
             letter-spacing: -0.01em;
             white-space: nowrap;
         }
 
-        .brand-dot {
-            width: 9px;
-            height: 9px;
-            background-color: var(--accent);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent);
+        .brand-logo {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            background-color: var(--text-main);
+            -webkit-mask: url('https://i.ibb.co/Pv7TS2q5/logo-s.png') no-repeat center / contain;
+            mask: url('https://i.ibb.co/Pv7TS2q5/logo-s.png') no-repeat center / contain;
             cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
             flex-shrink: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease, filter 0.25s ease;
+            user-select: none;
+            -webkit-user-drag: none;
         }
 
-        .brand-dot:hover {
-            transform: scale(1.35);
+        .brand-logo:hover {
+            background-color: var(--accent);
+            transform: scale(1.18) rotate(8deg);
+            filter: drop-shadow(0 2px 6px var(--accent-soft));
         }
 
-        .brand-dot.game-active {
+        .brand-logo.game-active {
             background-color: #ef4444 !important;
-            box-shadow: 0 0 10px #ef4444 !important;
-            animation: pulseDot 1.2s infinite ease-in-out;
+            filter: drop-shadow(0 0 10px #ef4444) !important;
+            animation: logoGamePulse 1.1s infinite ease-in-out;
         }
 
-        @keyframes pulseDot {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.4); }
+        @keyframes logoGamePulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.24) rotate(-12deg); }
         }
 
         .header-actions {
@@ -781,7 +786,7 @@
     <div class="app-wrapper">
         <header>
             <a href="#" class="brand" onclick="event.preventDefault();">
-                <span class="brand-dot" id="easter-egg-trigger" title="Double click me"></span>
+                <span class="brand-logo" id="easter-egg-trigger" title="Double click me" draggable="false" oncontextmenu="return false;"></span>
                 Türkay Yıldırım
             </a>
             <div class="header-actions">
@@ -1163,6 +1168,10 @@
         let lastDotClick = 0;
         let isJackpotOpen = false;
         let isSpinning = false;
+
+        // Sağ tık ve sürükleme engelleme
+        dotTrigger.addEventListener('contextmenu', (e) => e.preventDefault());
+        dotTrigger.addEventListener('dragstart', (e) => e.preventDefault());
 
         const SLOT_ITEMS = [
             { id: '7', html: '<span class="slot-item" style="color:#ef4444; font-weight:700;">7</span>' },
