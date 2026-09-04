@@ -33,6 +33,7 @@
             --accent-soft: rgba(180, 67, 24, 0.08);
             --accent-glow: rgba(180, 67, 24, 0.2);
             --mesh-color: rgba(60, 48, 36, 0.055);
+            --wip-gradient: linear-gradient(90deg, #b44318, #e07a38);
 
             --gh-l0: #e2dacd;
             --gh-l1: #d9b597;
@@ -62,6 +63,7 @@
             --accent-soft: rgba(59, 130, 246, 0.12);
             --accent-glow: rgba(59, 130, 246, 0.25);
             --mesh-color: rgba(255, 255, 255, 0.045);
+            --wip-gradient: linear-gradient(90deg, #2563eb, #60a5fa);
 
             --gh-l0: #141923;
             --gh-l1: #0f4a2d;
@@ -579,7 +581,7 @@
 
         .wip-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent), #f59e0b);
+            background: var(--wip-gradient);
             border-radius: 999px;
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
