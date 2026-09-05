@@ -982,8 +982,29 @@
 
         /* Responsive Breakpoints */
         @media (max-width: 960px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-            .sidebar { position: static; }
+            .dashboard-grid { 
+                display: flex;
+                flex-direction: column;
+            }
+            .sidebar { 
+                position: static; 
+                display: contents; /* Alt elemanları dashboard-grid hiyerarşisine dahil eder */
+            }
+            .panel-bio {
+                order: 1;
+            }
+            .main-content {
+                order: 2;
+                width: 100%;
+            }
+            .panel-contrib {
+                order: 3;
+                width: 100%;
+            }
+            .panel-contact {
+                order: 4;
+                width: 100%;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1042,7 +1063,7 @@
         <div class="dashboard-grid">
             <!-- Sidebar -->
             <aside class="sidebar">
-                <div class="panel">
+                <div class="panel panel-bio">
                     <div class="bio-headline">hey there, i am Türkay 👋</div>
                     <p class="bio-text">turning ideas into projects — designing architectures, training models, and testing to see what actually works.</p>
                     
@@ -1072,7 +1093,7 @@
                 </div>
 
                 <!-- GitHub Native Contributions -->
-                <div class="panel">
+                <div class="panel panel-contrib">
                     <div class="panel-title"><i class="fab fa-github"></i> contribution activity</div>
                     <div class="gh-stats-row">
                         <span>recent activity</span>
@@ -1093,7 +1114,7 @@
                 </div>
 
                 <!-- Contact -->
-                <div class="panel">
+                <div class="panel panel-contact">
                     <div class="panel-title"><i class="fas fa-paper-plane"></i> quick contact</div>
                     <form class="contact-form" id="contact-form">
                         <div class="form-row">
