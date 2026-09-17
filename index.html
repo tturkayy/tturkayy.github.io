@@ -109,7 +109,6 @@
             pointer-events: none;
         }
 
-        /* 1360px dengeli genişlik */
         .app-wrapper {
             position: relative;
             z-index: 1;
@@ -268,7 +267,7 @@
             top: 5.75rem;
         }
 
-        /* Panels / Containers */
+        /* Panels */
         .panel {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -408,7 +407,7 @@
             transform: translateY(-1px);
         }
 
-        /* GitHub Calendar Panel */
+        /* GitHub Calendar */
         .gh-stats-row {
             display: flex;
             justify-content: space-between;
@@ -865,7 +864,7 @@
             border-radius: var(--radius);
         }
 
-        /* Footer Copyright */
+        /* Footer */
         .page-footer {
             margin-top: 1.5rem;
             padding: 1.5rem 0 1rem;
@@ -1053,7 +1052,6 @@
                 <a href="https://medium.com/@turkayyildirim" target="_blank" class="social-link" title="Medium"><i class="fab fa-medium"></i></a>
                 <a href="https://www.linkedin.com/in/turkayyildirim/" target="_blank" class="social-link" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
                 
-                <!-- 2-Theme Switcher: Sun (Sepia) <-> Moon (Dark) -->
                 <button class="theme-icon-btn" id="themeCycleBtn" aria-label="Toggle theme">
                     <i id="themeIcon" class="fas fa-sun" title="sepia"></i>
                 </button>
@@ -1076,7 +1074,7 @@
                     <div class="panel-title"><i class="fas fa-bolt"></i> currently</div>
                     <div class="currently-item">
                         <span class="status-dot"></span>
-                        <span>exploring visual-optical data encoding & 2d signal modulation</span>
+                        <span>investigating activation steering vectors to mitigate sycophantic drift in llms</span>
                     </div>
 
                     <div class="panel-title"><i class="fas fa-terminal"></i> stack</div>
@@ -1138,25 +1136,7 @@
                     <div class="panel-title"><i class="fas fa-microchip"></i> work in progress (wip)</div>
                     <div class="wip-grid">
                         
-                        <!-- Project 1: Optical Encoding -->
-                        <div class="wip-card">
-                            <div class="wip-header">
-                                <span class="wip-tag">computer vision</span>
-                                <span class="wip-code">cv-mod-2d</span>
-                            </div>
-                            <div class="wip-title">2d spatial optical stream modulation</div>
-                            <div class="wip-note">
-                                continuous sinusoidal pam-4 modulation on 8x12 symbol grids with reed-solomon ecc. includes 4-corner perspective rectification and intensity-weighted centroid tracking; porting real-time video feed scanner.
-                            </div>
-                            <div class="wip-progress-box">
-                                <div class="wip-bar-track">
-                                    <div class="wip-bar-fill" style="width: 92%;"></div>
-                                </div>
-                                <span class="wip-percent">92%</span>
-                            </div>
-                        </div>
-
-                        <!-- Project 2: Language Runtime -->
+                        <!-- Project 1: Language Runtime -->
                         <div class="wip-card">
                             <div class="wip-header">
                                 <span class="wip-tag">compiler engineering</span>
@@ -1174,7 +1154,7 @@
                             </div>
                         </div>
 
-                        <!-- Project 3: Generative GAN -->
+                        <!-- Project 2: Generative GAN -->
                         <div class="wip-card">
                             <div class="wip-header">
                                 <span class="wip-tag">generative vision</span>
@@ -1192,7 +1172,7 @@
                             </div>
                         </div>
 
-                        <!-- Project 4: Sequence Modeling -->
+                        <!-- Project 3: Sequence Modeling -->
                         <div class="wip-card">
                             <div class="wip-header">
                                 <span class="wip-tag">machine learning</span>
@@ -1293,7 +1273,6 @@
             } catch (e) {}
         }
 
-        // 2-Theme Switcher: Sepia (Sun) <-> Dark (Moon)
         const themeBtn = document.getElementById('themeCycleBtn');
         const themeIcon = document.getElementById('themeIcon');
 
@@ -1322,7 +1301,6 @@
             setTheme(isDark ? 'sepia' : 'dark');
         });
 
-        // GitHub Native Activity Calendar
         async function fetchGitHubContributions() {
             const gridEl = document.getElementById('gh-grid');
             const totalEl = document.getElementById('gh-total-contribs');
@@ -1361,7 +1339,6 @@
             }
         }
 
-        // Repositories Fetcher
         async function fetchGitHubProjects() {
             const container = document.getElementById('projects-container');
             const ignored = [
@@ -1430,7 +1407,6 @@
             }
         }
 
-        // Medium RSS Fetcher
         async function fetchMediumArticles() {
             const container = document.getElementById('articles-container');
             const rssUrl = `https://medium.com/feed/@${MEDIUM_USERNAME}`;
@@ -1498,7 +1474,6 @@
             initJackpotStrips();
         });
 
-        // Easter Egg Reel Jackpot
         const dotTrigger = document.getElementById('easter-egg-trigger');
         const jackpotModal = document.getElementById('jackpot-modal');
         const statusText = document.getElementById('jackpot-status');
@@ -1604,7 +1579,6 @@
             }, 1800);
         }
 
-        // Interactive Canvas Mesh
         const canvas = document.getElementById('warp-canvas');
         const ctx = canvas.getContext('2d');
         let width, height;
@@ -1692,7 +1666,6 @@
         }
         drawInteractiveMesh();
 
-        // Contact Form
         document.getElementById('contact-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const status = document.getElementById('form-status');
