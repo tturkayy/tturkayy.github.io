@@ -594,13 +594,94 @@
             text-align: right;
         }
 
+        /* Compact Interactive Deployments Cards */
+        .deploy-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.15rem;
+        }
+
+        .deploy-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.15rem 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: var(--shadow-subtle);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deploy-card:hover {
+            border-color: var(--accent);
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .deploy-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .deploy-url {
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .deploy-url i {
+            color: var(--accent);
+            font-size: 0.7rem;
+        }
+
+        .deploy-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+        }
+
+        .deploy-desc {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .deploy-action {
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: transform 0.2s ease;
+        }
+
+        .deploy-card:hover .deploy-action {
+            transform: translateX(3px);
+        }
+
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1.15rem;
         }
 
-        /* Project Cards */
+        /* Project Cards (Repositories) */
         .project-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -989,26 +1070,27 @@
                 position: static; 
                 display: contents;
             }
-            .panel-bio {
-                order: 1;
+            .panel-bio { 
+                order: 1; 
             }
-            .main-content {
-                order: 2;
-                width: 100%;
+            .main-content { 
+                order: 2; 
+                width: 100%; 
             }
-            .panel-contrib {
-                order: 3;
-                width: 100%;
+            .panel-contrib { 
+                order: 3; 
+                width: 100%; 
             }
-            .panel-contact {
-                order: 4;
-                width: 100%;
+            .panel-contact { 
+                order: 4; 
+                width: 100%; 
             }
         }
 
         @media (max-width: 768px) {
             header { top: 0.75rem; }
             .wip-grid { grid-template-columns: 1fr; }
+            .deploy-grid { grid-template-columns: 1fr; }
             .projects-grid { grid-template-columns: 1fr; }
             .articles-grid { grid-template-columns: 1fr; }
             .app-wrapper { padding: 1.25rem 1rem; }
@@ -1193,7 +1275,38 @@
                     </div>
                 </section>
 
-                <!-- 2. Articles and Study Notes (Medium RSS) -->
+                <!--  Deployments -->
+                <section class="content-section">
+                    <div class="panel-title"><i class="fas fa-layer-group"></i>deployments</div>
+                    <div class="deploy-grid">
+                                                <a href="https://tturkayy.github.io/newcode/" target="_blank" class="deploy-card">
+                            <div class="deploy-top">
+                                <span class="deploy-url"><i class="fas fa-terminal"></i> tturkayy.github.io/newcode</span>
+                                <span class="deploy-action"><i class="fas fa-arrow-up-right-from-square"></i></span>
+                            </div>
+                            <div class="deploy-title">newcode</div>
+                        </a>
+                        <a href="https://tturkayy.github.io/convnet-cipher/" target="_blank" class="deploy-card">
+                            <div class="deploy-top">
+                                <span class="deploy-url"><i class="fas fa-network-wired"></i> tturkayy.github.io/convnet-cipher</span>
+                                <span class="deploy-action"><i class="fas fa-arrow-up-right-from-square"></i></span>
+                            </div>
+                            <div class="deploy-title">convnet cipher</div>
+                        </a>
+
+                        <a href="https://stegocrypt.streamlit.app/" target="_blank" class="deploy-card">
+                            <div class="deploy-top">
+                                <span class="deploy-url"><i class="fas fa-terminal"></i> stegocrypt.streamlit.app/</span>
+                                <span class="deploy-action"><i class="fas fa-arrow-up-right-from-square"></i></span>
+                            </div>
+                            <div class="deploy-title">stegocrypt web</div>
+                        </a>
+
+
+                    </div>
+                </section>
+
+                <!-- 3. Articles and Study Notes (Medium RSS) -->
                 <section class="content-section">
                     <div class="panel-title"><i class="fab fa-medium"></i> articles and study notes</div>
                     <div class="articles-grid" id="articles-container">
@@ -1201,7 +1314,7 @@
                     </div>
                 </section>
 
-                <!-- 3. Repositories -->
+                <!-- 4. Repositories -->
                 <section class="content-section">
                     <div class="panel-title"><i class="fas fa-cube"></i> repositories</div>
                     <div class="projects-grid" id="projects-container">
@@ -1209,7 +1322,7 @@
                     </div>
                 </section>
 
-                <!-- 4. Publications -->
+                <!-- 5. Publications -->
                 <section class="content-section">
                     <div class="panel-title"><i class="fas fa-book-bookmark"></i> publications</div>
                     <a href="https://ieeexplore.ieee.org/document/11637037" target="_blank" class="info-card">
